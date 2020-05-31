@@ -5,6 +5,7 @@ import InputBase from "@material-ui/core/InputBase";
 import { withStyles, fade } from "@material-ui/core/styles";
 import GridListTile from "@material-ui/core/GridListTile";
 import GridList from "@material-ui/core/GridList";
+import AddIcon from "@material-ui/icons/Add";
 
 const styles = (theme) => ({
   root: {
@@ -63,6 +64,23 @@ const styles = (theme) => ({
       },
     },
   },
+  addImage: {
+    height: "99%",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: theme.shape.borderRadius,
+    color: theme.palette.divider,
+    border: `1px dashed ${theme.palette.divider}`,
+    padding: 0,
+    transition: theme.transitions.create(["color", "border-color"]),
+    "&&": {
+      display: "flex",
+    },
+    "&:hover": {
+      borderColor: "currentColor",
+      color: theme.palette.text.secondary,
+    },
+  },
 });
 
 class ImageGridList extends React.Component {
@@ -88,7 +106,7 @@ class ImageGridList extends React.Component {
         ...prevState,
         imageData: prevState.originalData
           .sort(() => 0.5 * Math.random()) // shuffle the array of images
-          .slice(0, Math.random() * 30), // 30 is the original size of the data
+          .slice(0, Math.random() * 29), // 29 is the original size of the data
         query: query,
       }));
     }
@@ -96,7 +114,7 @@ class ImageGridList extends React.Component {
 
   fetchData = async () => {
     let response = await fetch(
-      `https://api.unsplash.com/photos/random?client_id=${process.env.REACT_APP_CLIENT_ID}&count=30&query=clothing,fashion,people`
+      `https://api.unsplash.com/photos/random?client_id=${process.env.REACT_APP_CLIENT_ID}&count=29&query=clothing,fashion,people`
     );
     if (response.ok) {
       let data = await response.json();
@@ -116,6 +134,23 @@ class ImageGridList extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const gridListTiles = [
+      <GridListTile key={"+"} cols={1}>
+        <a
+          className={classes.addImage}
+          rel="noopener noreferrer"
+          target="_blank"
+          href="https://www.kaggle.com/c/imaterialist-fashion-2020-fgvc7"
+        >
+          <AddIcon />
+        </a>
+      </GridListTile>,
+      this.state.imageData.map((image) => (
+        <GridListTile key={image.id} cols={image.cols || 1}>
+          <img src={image.urls.small} alt={image.alt_description} />
+        </GridListTile>
+      )),
+    ];
     return (
       <div className={classes.root}>
         <div className={classes.search}>
@@ -135,11 +170,7 @@ class ImageGridList extends React.Component {
         </div>
         <div className={classes.gridList}>
           <GridList cellHeight={160} cols={3}>
-            {this.state.imageData.map((image) => (
-              <GridListTile key={image.id} cols={image.cols || 1}>
-                <img src={image.urls.small} alt={image.alt_description} />
-              </GridListTile>
-            ))}
+            {gridListTiles}
           </GridList>
         </div>
       </div>
