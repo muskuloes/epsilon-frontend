@@ -6,12 +6,12 @@ import axios from "axios";
 
 const styles = (theme) => ({
   addImage: {
-    height: "99%",
+    height: "97%",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: theme.shape.borderRadius,
     color: theme.palette.divider,
-    border: `1px dashed ${theme.palette.divider}`,
+    border: `2px dashed ${theme.palette.divider}`,
     padding: 0,
     transition: theme.transitions.create(["color", "border-color"]),
     "&&": {
@@ -49,7 +49,7 @@ class UploadDropzone extends Component {
       data.append("file", file);
     }
     axios
-      .post("http://localhost:5000/upload", data)
+      .post(`${process.env.REACT_APP_API_ENDPOINT}/upload`, data)
       .then((res) => {
         console.log(res.data);
       })

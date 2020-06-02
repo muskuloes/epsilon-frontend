@@ -4,6 +4,7 @@ import InputBase from "@material-ui/core/InputBase";
 import { withStyles, fade } from "@material-ui/core/styles";
 import GridListTile from "@material-ui/core/GridListTile";
 import GridList from "@material-ui/core/GridList";
+import socketIOClient from "socket.io-client";
 import Dropzone from "./Dropzone";
 
 const styles = (theme) => ({
@@ -79,13 +80,11 @@ class ImageGridList extends React.Component {
     const query = event.target.value;
     if (query.length === 0) {
       this.setState((prevState) => ({
-        ...prevState,
         imageData: prevState.originalData,
         query: query,
       }));
     } else {
       this.setState((prevState) => ({
-        ...prevState,
         imageData: prevState.originalData
           .sort(() => 0.5 * Math.random()) // shuffle the array of images
           .slice(0, Math.random() * 29), // 29 is the original size of the data
@@ -112,6 +111,20 @@ class ImageGridList extends React.Component {
 
   componentDidMount = () => {
     this.fetchData();
+    const socket = socketIOClient(process.env.REACT_APP_API_ENDPOINT);
+    socket.on("updated files", (data) => {
+      // TODO: The api would return data with all images attributes. The code below is just for testing purposes
+      const images = data.map((image) => ({
+        id: Math.random() * 1000 + 1,
+        alt_description: "flask imagaes",
+        urls: {
+          small: `${process.env.REACT_APP_API_ENDPOINT}/upload/${image}`,
+        },
+      }));
+      this.setState((prevState) => ({
+        imageData: [...images, ...prevState.imageData],
+      }));
+    });
   };
 
   render() {
