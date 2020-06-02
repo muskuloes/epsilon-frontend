@@ -23,6 +23,7 @@ const styles = (theme) => ({
     },
   },
 });
+
 class UploadDropzone extends Component {
   constructor(props) {
     super(props);

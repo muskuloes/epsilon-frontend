@@ -93,24 +93,25 @@ class ImageGridList extends React.Component {
     }
   };
 
-  fetchData = async () => {
-    let response = await fetch(
-      `https://api.unsplash.com/photos/random?client_id=${process.env.REACT_APP_CLIENT_ID}&count=29&query=clothing,fashion,people`
-    );
-    if (response.ok) {
-      let data = await response.json();
-      this.setState({
-        imageData: data,
-        query: "",
-        originalData: data,
-      });
-    } else {
-      console.log(response);
-    }
-  };
+  // TODO: Fetch data from our own API
+  // fetchData = async () => {
+  // let response = await fetch(
+  // `https://api.unsplash.com/photos/random?client_id=${process.env.REACT_APP_CLIENT_ID}&count=29&query=clothing,fashion,people`
+  // );
+  // if (response.ok) {
+  // let data = await response.json();
+  // this.setState({
+  // imageData: data,
+  // query: "",
+  // originalData: data,
+  // });
+  // } else {
+  // console.log(response);
+  // }
+  // };
 
   componentDidMount = () => {
-    this.fetchData();
+    // this.fetchData();
     const socket = socketIOClient(process.env.REACT_APP_API_ENDPOINT);
     socket.on("updated files", (data) => {
       // TODO: The api would return data with all images attributes. The code below is just for testing purposes
@@ -123,6 +124,7 @@ class ImageGridList extends React.Component {
       }));
       this.setState((prevState) => ({
         imageData: [...images, ...prevState.imageData],
+        originalData: [...images, ...prevState.originalData],
       }));
     });
   };
