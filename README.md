@@ -8,7 +8,7 @@
 yarn install
 ```
 
-- Api keys and other sensitive information used by the app should be placed in a `.env` file at the root directory of this project. This file is ignored by git, which makes sure the information it contains isn't shared.
+- Api keys and other sensitive information used by the app should be placed in a `.env.local` file at the root directory of this project. This file is ignored by git, which makes sure the information it contains isn't shared.
 - Start the app
 
 ```sh
