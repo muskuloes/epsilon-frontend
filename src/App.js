@@ -1,11 +1,11 @@
 import React from "react";
+import { Switch, Route } from "react-router-dom";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
 import { withStyles, fade } from "@material-ui/core/styles";
-import GridListTile from "@material-ui/core/GridListTile";
-import GridList from "@material-ui/core/GridList";
 import socketIOClient from "socket.io-client";
-import Dropzone from "./Dropzone";
+import DetailView from "./detail-view/Detail";
+import ImageGridListView from "./grid-view/ImageGridList";
 
 const styles = (theme) => ({
   root: {
@@ -15,13 +15,6 @@ const styles = (theme) => ({
     justifyContent: "space-around",
     overflow: "hidden",
     backgroundColor: theme.palette.background.paper,
-  },
-  gridList: {
-    width: 500,
-    height: 450,
-    position: "absolute",
-    // display: "flex",
-    top: 60,
   },
   search: {
     position: "absolute",
@@ -66,7 +59,7 @@ const styles = (theme) => ({
   },
 });
 
-class ImageGridList extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -86,8 +79,8 @@ class ImageGridList extends React.Component {
     } else {
       this.setState((prevState) => ({
         imageData: prevState.originalData
-          .sort(() => 0.5 * Math.random()) // shuffle the array of images
-          .slice(0, Math.random() * 29), // 29 is the original size of the data
+          .slice(0, Math.random() * 29) // 29 is the original size of the data
+          .sort(() => 0.5 * Math.random()), // shuffle the array of images
         query: query,
       }));
     }
@@ -95,19 +88,20 @@ class ImageGridList extends React.Component {
 
   // TODO: Fetch data from our own API
   // fetchData = async () => {
-  // let response = await fetch(
-  // `https://api.unsplash.com/photos/random?client_id=${process.env.REACT_APP_CLIENT_ID}&count=29&query=clothing,fashion,people`
-  // );
-  // if (response.ok) {
-  // let data = await response.json();
-  // this.setState({
-  // imageData: data,
-  // query: "",
-  // originalData: data,
-  // });
-  // } else {
-  // console.log(response);
-  // }
+    // let response = await fetch(
+      // `https://api.unsplash.com/photos/random?client_id=${process.env.REACT_APP_CLIENT_ID}&count=29&query=clothing,fashion,people`
+    // );
+    // if (response.ok) {
+      // let data = await response.json();
+      // console.log(data);
+      // this.setState({
+        // imageData: data,
+        // query: "",
+        // originalData: data,
+      // });
+    // } else {
+      // console.log(response);
+    // }
   // };
 
   componentDidMount = () => {
@@ -116,8 +110,8 @@ class ImageGridList extends React.Component {
     socket.on("updated files", (data) => {
       // TODO: The api would return data with all images attributes. The code below is just for testing purposes
       const images = data.map((image) => ({
-        id: Math.random() * 1000 + 1,
-        alt_description: "flask imagaes",
+        id: image, // use imageID instead
+        alt_description: "flask images",
         urls: {
           small: `${process.env.REACT_APP_API_ENDPOINT}/upload/${image}`,
         },
@@ -131,40 +125,33 @@ class ImageGridList extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const gridListTiles = [
-      <GridListTile key={"+"} cols={1}>
-        <Dropzone />
-      </GridListTile>,
-      this.state.imageData.map((image) => (
-        <GridListTile key={image.id} cols={image.cols || 1}>
-          <img src={image.urls.small} alt={image.alt_description} />
-        </GridListTile>
-      )),
-    ];
     return (
       <div className={classes.root}>
-        <div className={classes.search}>
-          <div className={classes.searchIcon}>
-            <SearchIcon />
-          </div>
-          <InputBase
-            placeholder="Search…"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-            }}
-            inputProps={{ "aria-label": "search" }}
-            value={this.state.query}
-            onChange={this.handleInputChange}
-          />
-        </div>
-        <div className={classes.gridList}>
-          <GridList cellHeight={160} cols={3}>
-            {gridListTiles}
-          </GridList>
-        </div>
+        <Switch>
+          <Route path="/detail/:id">
+            <DetailView />
+          </Route>
+          <Route path="/">
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                placeholder="Search…"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ "aria-label": "search" }}
+                value={this.state.query}
+                onChange={this.handleInputChange}
+              />
+            </div>
+            <ImageGridListView imageData={this.state.imageData} />
+          </Route>
+        </Switch>
       </div>
     );
   }
 }
-export default withStyles(styles)(ImageGridList);
+export default withStyles(styles)(App);
