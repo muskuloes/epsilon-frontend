@@ -14,19 +14,25 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   button: {
-    margin: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   image: {
     borderRadius: theme.shape.borderRadius,
     maxHeight: 700,
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
   },
   list: {
     width: "100%",
-    maxWidth: 500,
+    // maxWidth: 200,
     backgroundColor: theme.palette.background.paper,
     position: "relative",
     overflow: "auto",
     maxHeight: 700,
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
   },
   listSection: {
     backgroundColor: "inherit",
