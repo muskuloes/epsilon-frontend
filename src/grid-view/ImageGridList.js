@@ -22,7 +22,7 @@ function ImageGridList(props) {
     </GridListTile>,
     props.imageData.map((image) => (
       <GridListTile key={image.id} cols={1}>
-        <Link to={`/detail/${image.id}`}>
+        <Link to={`/detail/${image.name}`}>
           <img
             src={image.urls.small}
             alt={image.alt_description}

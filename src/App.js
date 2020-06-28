@@ -3,9 +3,11 @@ import { Switch, Route } from "react-router-dom";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
 import { withStyles, fade } from "@material-ui/core/styles";
-import socketIOClient from "socket.io-client";
+
 import DetailView from "./detail-view/Detail";
 import ImageGridListView from "./grid-view/ImageGridList";
+
+import socketIOClient from "socket.io-client";
 
 const styles = (theme) => ({
   root: {
@@ -86,36 +88,40 @@ class App extends React.Component {
     }
   };
 
+  handleData = (data) => {
+    const images = data.reverse().map((image) => ({
+      id: image.id, // use imageID instead
+      alt_description: "flask images",
+      urls: {
+        small: `${process.env.REACT_APP_API_ENDPOINT}/upload/${image.name}`,
+      },
+      name: image.name,
+    }));
+    return images;
+  };
+
   // TODO: Fetch data from our own API
-  // fetchData = async () => {
-    // let response = await fetch(
-      // `https://api.unsplash.com/photos/random?client_id=${process.env.REACT_APP_CLIENT_ID}&count=29&query=clothing,fashion,people`
-    // );
-    // if (response.ok) {
-      // let data = await response.json();
-      // console.log(data);
-      // this.setState({
-        // imageData: data,
-        // query: "",
-        // originalData: data,
-      // });
-    // } else {
-      // console.log(response);
-    // }
-  // };
+  fetchData = async () => {
+    let response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}`);
+    if (response.ok) {
+      let { data } = await response.json();
+      let imageData = this.handleData(data);
+      this.setState({
+        imageData,
+        query: "",
+        originalData: imageData,
+      });
+    } else {
+      console.log(response);
+    }
+  };
 
   componentDidMount = () => {
-    // this.fetchData();
+    this.fetchData();
     const socket = socketIOClient(process.env.REACT_APP_API_ENDPOINT);
     socket.on("updated files", (data) => {
       // TODO: The api would return data with all images attributes. The code below is just for testing purposes
-      const images = data.map((image) => ({
-        id: image, // use imageID instead
-        alt_description: "flask images",
-        urls: {
-          small: `${process.env.REACT_APP_API_ENDPOINT}/upload/${image}`,
-        },
-      }));
+      let images = this.handleData(data);
       this.setState((prevState) => ({
         imageData: [...images, ...prevState.imageData],
         originalData: [...images, ...prevState.originalData],
