@@ -1,3 +1,5 @@
+# Online Deployment
+- The site is deployed on heroku: https://epsilon.herokuapp.com
 # Development Setup
 
 - Install [yarn](https://classic.yarnpkg.com/en/) and [nodejs](https://nodejs.org/en/download/)
