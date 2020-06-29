@@ -1,5 +1,5 @@
 # Online Deployment
-- The site is deployed on Heroku: https://epsilon.herokuapp.com
+- The site is deployed on Heroku: https://3psilon.vercel.app
 # Development Setup
 
 - Install [yarn](https://classic.yarnpkg.com/en/) and [nodejs](https://nodejs.org/en/download/)
