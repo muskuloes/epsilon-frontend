@@ -81,7 +81,7 @@ class UploadDropzone extends Component {
           open={this.state.open}
           onSave={this.handleSave}
           acceptedFiles={["image/jpeg", "image/png"]}
-          filesLimit={30}
+          filesLimit={3}
           showPreviews={true}
           maxFileSize={5000000}
           onClose={this.handleClose}
