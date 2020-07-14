@@ -6,7 +6,6 @@ import { withStyles, fade } from "@material-ui/core/styles";
 
 import DetailView from "./detail-view/Detail";
 import ImageGridListView from "./grid-view/ImageGridList";
-
 import socketIOClient from "socket.io-client";
 
 const styles = (theme) => ({
@@ -60,6 +59,8 @@ const styles = (theme) => ({
     },
   },
 });
+
+const socket = socketIOClient(process.env.REACT_APP_API_ENDPOINT);
 
 class App extends React.Component {
   constructor(props) {
@@ -118,7 +119,6 @@ class App extends React.Component {
 
   componentDidMount = () => {
     this.fetchData();
-    const socket = socketIOClient(process.env.REACT_APP_API_ENDPOINT);
     socket.on("updated files", (data) => {
       // TODO: The api would return data with all images attributes. The code below is just for testing purposes
       let images = this.handleData(data);
