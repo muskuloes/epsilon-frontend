@@ -3,10 +3,10 @@ import { Switch, Route } from "react-router-dom";
 import SearchIcon from "@material-ui/icons/Search";
 import InputBase from "@material-ui/core/InputBase";
 import { withStyles, fade } from "@material-ui/core/styles";
+import socketIOClient from "socket.io-client";
 
 import DetailView from "./detail-view/Detail";
 import ImageGridListView from "./grid-view/ImageGridList";
-import socketIOClient from "socket.io-client";
 
 const styles = (theme) => ({
   root: {
@@ -67,8 +67,9 @@ class App extends React.Component {
     super(props);
     this.state = {
       imageData: [],
-      query: "",
       originalData: [],
+      query: "",
+      search: false,
     };
   }
 
@@ -78,14 +79,31 @@ class App extends React.Component {
       this.setState((prevState) => ({
         imageData: prevState.originalData,
         query: query,
+        search: false,
       }));
     } else {
-      this.setState((prevState) => ({
-        imageData: prevState.originalData
-          .slice(0, Math.random() * 29) // 29 is the original size of the data
-          .sort(() => 0.5 * Math.random()), // shuffle the array of images
+      this.setState({
         query: query,
-      }));
+      });
+    }
+  };
+  handleSearch = async (event) => {
+    if (event.key === "Enter") {
+      const query = this.state.query;
+      let response = await fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/search/${query}`
+      );
+      if (response.ok) {
+        let { data } = await response.json();
+        data = JSON.parse(data);
+        // console.log(data);
+        let imageData = this.handleData(data);
+        this.setState((prevState) => ({
+          imageData: imageData,
+          originalData: prevState.originalData,
+          search: true,
+        }));
+      }
     }
   };
 
@@ -109,7 +127,6 @@ class App extends React.Component {
       let imageData = this.handleData(data);
       this.setState({
         imageData,
-        query: "",
         originalData: imageData,
       });
     } else {
@@ -120,7 +137,6 @@ class App extends React.Component {
   componentDidMount = () => {
     this.fetchData();
     socket.on("updated files", (data) => {
-      // TODO: The api would return data with all images attributes. The code below is just for testing purposes
       let images = this.handleData(data);
       this.setState((prevState) => ({
         imageData: [...images, ...prevState.imageData],
@@ -151,13 +167,18 @@ class App extends React.Component {
                 inputProps={{ "aria-label": "search" }}
                 value={this.state.query}
                 onChange={this.handleInputChange}
+                onKeyDown={this.handleSearch}
               />
             </div>
-            <ImageGridListView imageData={this.state.imageData} />
+            <ImageGridListView
+              imageData={this.state.imageData}
+              search={this.state.search}
+            />
           </Route>
         </Switch>
       </div>
     );
   }
 }
+
 export default withStyles(styles)(App);

@@ -20,10 +20,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ImageGridList(props) {
   const classes = useStyles();
-  const gridListTiles = [
-    <GridListTile key={"+"} cols={1}>
-      <Dropzone />
-    </GridListTile>,
+  let gridListTiles = [
     props.imageData.map((image) => (
       <GridListTile key={image.id} cols={1}>
         <Link to={`/detail/${image.name}`}>
@@ -36,6 +33,14 @@ function ImageGridList(props) {
       </GridListTile>
     )),
   ];
+  if (!props.search) {
+    gridListTiles = [
+      <GridListTile key={"+"} cols={1}>
+        <Dropzone />
+      </GridListTile>,
+      ...gridListTiles,
+    ];
+  }
   return (
     <Container className={classes.gridList} maxWidth="sm">
       <GridList cellHeight={160} cols={3} spacing={5}>
