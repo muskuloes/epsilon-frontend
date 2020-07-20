@@ -7,6 +7,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import List from "@material-ui/core/List";
 import ListSubheader from "@material-ui/core/ListSubheader";
+import ImageMapper from "react-image-mapper";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,6 +56,8 @@ function Detail() {
   const [predictions, setPredictions] = useState({
     data: [],
     loading: true,
+    map: {},
+    all_areas: [],
   });
 
   useEffect(() => {
@@ -64,8 +67,27 @@ function Detail() {
       );
       if (response.status === 200) {
         let { data } = await response.json();
-        let classes = JSON.parse(data)["preds"]["class_ids"];
-        setPredictions({ data: classes, loading: false });
+        let preds = JSON.parse(data)["preds"];
+        let classes = preds["class_ids"];
+        let bboxes = preds["bbox"];
+        let areas = bboxes.map((box, index) => {
+          return {
+            name: index,
+            shape: "rect",
+            coords: [box[0], box[1], box[0] + box[2], box[1] + box[3]],
+            preFillColor: "rgba(177, 255, 71, 0.5)",
+            strokeColor: "#6afd09",
+          };
+        });
+        setPredictions({
+          data: classes,
+          loading: false,
+          map: {
+            name: "masks",
+            areas: [],
+          },
+          all_areas: areas,
+        });
       }
     };
     fetchData();
@@ -89,8 +111,9 @@ function Detail() {
         <Grid container spacing={10}>
           <>
             <Grid item xs={12} sm={8}>
-              <img
+              <ImageMapper
                 src={`${process.env.REACT_APP_API_ENDPOINT}/upload/${id}`}
+                map={predictions.map}
                 alt="custom description"
                 className={classes.image}
               />
@@ -100,7 +123,23 @@ function Detail() {
                 {predictions.data.map((class_type, index) => (
                   <li key={index} className={classes.listSection}>
                     <ul className={classes.ul}>
-                      <ListSubheader>{class_type}</ListSubheader>
+                      <ListSubheader>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            setPredictions((prevState) => ({
+                              ...prevState,
+                              map: {
+                                name: "masks",
+                                areas: [prevState.all_areas[index]],
+                              },
+                            }));
+                          }}
+                        >
+                          {class_type}
+                        </Button>
+                      </ListSubheader>
                     </ul>
                   </li>
                 ))}

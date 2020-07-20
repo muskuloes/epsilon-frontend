@@ -96,7 +96,6 @@ class App extends React.Component {
       if (response.ok) {
         let { data } = await response.json();
         data = JSON.parse(data);
-        // console.log(data);
         let imageData = this.handleData(data);
         this.setState((prevState) => ({
           imageData: imageData,
