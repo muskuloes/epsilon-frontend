@@ -1,6 +1,3 @@
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/muskuloes/epsilon)
-# Online Deployment
-- The site is deployed on Heroku: https://3psilon.vercel.app
 # Development Setup
 
 - Install [yarn](https://classic.yarnpkg.com/en/) and [nodejs](https://nodejs.org/en/download/)
