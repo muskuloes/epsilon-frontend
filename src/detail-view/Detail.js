@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
+import ImageMapper from "react-image-mapper";
 import List from "@material-ui/core/List";
 import ListSubheader from "@material-ui/core/ListSubheader";
-import ImageMapper from "react-image-mapper";
+import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,16 +50,22 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "inherit",
     padding: 0,
   },
+  sentiment: {
+    marginLeft: 4,
+    marginRight: 4,
+  },
 }));
 
 function Detail() {
   const { id } = useParams();
   const classes = useStyles();
+  let textInput = useRef(null);
   const [predictions, setPredictions] = useState({
     data: [],
     loading: true,
     map: {},
     all_areas: [],
+    correction: null,
   });
 
   useEffect(() => {
@@ -87,6 +95,7 @@ function Detail() {
             areas: [],
           },
           all_areas: areas,
+          correction: null,
         });
       }
     };
@@ -139,6 +148,29 @@ function Detail() {
                         >
                           {class_type}
                         </Button>
+                        <SentimentVeryDissatisfiedIcon
+                          color="error"
+                          className={classes.sentiment}
+                          onClick={() => {
+                            setPredictions((prevState) => ({
+                              ...prevState,
+                              correction: index,
+                            }));
+                          }}
+                        />
+
+                        {predictions.correction === index && (
+                          <TextField
+                            id="standard-basic"
+                            label="Correction"
+                            inputRef={textInput}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                textInput.current.value = "";
+                              }
+                            }}
+                          />
+                        )}
                       </ListSubheader>
                     </ul>
                   </li>
