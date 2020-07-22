@@ -8,6 +8,7 @@
 yarn install
 ```
 
+- Start the [backend](https://gitlab.lrz.de/team-unicorn/web-backend/-/blob/master/README.md#development-setup)
 - Start the app
 
 ```sh
