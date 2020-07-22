@@ -145,11 +145,11 @@ function Detail() {
                               },
                             }));
                           }}
+                          className={classes.button}
                         >
                           {class_type}
                         </Button>
                         <SentimentVeryDissatisfiedIcon
-                          color="error"
                           className={classes.sentiment}
                           onClick={() => {
                             setPredictions((prevState) => ({
